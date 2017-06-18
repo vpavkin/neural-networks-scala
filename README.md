@@ -10,4 +10,3 @@ Before running `ImageRecognition` exercise you will need to unzip [MNIST trainin
 
 1. Download [images archive](http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz) and unzip into `.src/main/resources/train-images-idx3-ubyte`
 2. Download [labels archive](http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz) and unzip into `.src/main/resources/train-labels-idx1-ubyte`
-
