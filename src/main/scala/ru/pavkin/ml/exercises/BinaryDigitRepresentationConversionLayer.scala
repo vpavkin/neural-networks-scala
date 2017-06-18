@@ -33,7 +33,7 @@ object BinaryDigitRepresentationConversionLayer extends App {
         (o, w, o, w, o, w, o, w, o, w)
       )
     ),
-    activationFunction = SigmoidActivation
+    activationFunction = SigmoidActivationFunction
   )
 
   // test for all possible outbuts
