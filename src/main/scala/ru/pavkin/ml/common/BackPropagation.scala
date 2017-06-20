@@ -66,10 +66,10 @@ class BackPropagation(
     val biasesDerivative = biases.map(v => DenseVector.zeros[Double](v.size)).to[ListBuffer]
     val weightsDerivative = weights.map(m => DenseMatrix.zeros[Double](m.rows, m.cols)).to[ListBuffer]
 
-    // calculate "error" for the last layer: δ[L] = ∇C ⊙ σ′(z[L])
+    // calculate "error" for the last layer.
+    // e.g. for MSE this will be: δ[L] = ∇C ⊙ σ′(z[L])
     val lastLayerDelta: DenseVector[Double] =
-      costFunction.derivative(activations.last, input.correctResult) *
-        activationFunction.derivative(weightedInputs.last)
+      costFunction.outputLayerDelta(activations.last, weightedInputs.last, input.correctResult)
 
     // update biases gradient for last layer: δ[L]
     biasesDerivative(numberOfLayers - 1) = lastLayerDelta

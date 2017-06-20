@@ -42,7 +42,7 @@ class StochasticGradientDescentTraining(
     // for each element of the mini-batch calculate the gradient using backpropagation and
     // add the result to the total gradient of the mini-batch
     batch.foreach { input =>
-      val gradient = new BackPropagation(network, QuadraticCostFunction).gradient(input)
+      val gradient = new BackPropagation(network, costFunction).gradient(input)
       biasesGradient.zip(gradient.biasesDerivative).foreach { case (b, dB) => b :+= dB }
       weightsGradient.zip(gradient.weightsDerivative).foreach { case (w, dW) => w :+= dW }
     }

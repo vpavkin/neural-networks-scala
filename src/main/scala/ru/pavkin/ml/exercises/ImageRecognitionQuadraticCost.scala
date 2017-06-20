@@ -8,16 +8,18 @@ import ru.pavkin.ml.mnist.ImageDataLoader
   * Main exercise from chapters 1-2.
   * Image recognition using layered neural network trained with stochastic gradient descent.
   */
-object ImageRecognition extends App {
+object ImageRecognitionQuadraticCost extends App {
 
   val mnistData = ImageDataLoader.loadTestDataFromResources.getOrElse(throw new Exception("Failed to load test data"))
   val (trainingInputs, validationInputs) = mnistData.splitAt(50000)
 
-  val net = TrainableLayeredNetwork.generate(List(28 * 28, 30, 10), SigmoidActivationFunction)
+  val activationFunction: DifferentiableActivationFunction = SigmoidActivationFunction
+
+  val net = TrainableLayeredNetwork.generate(List(28 * 28, 100, 10), activationFunction)
 
   val training = new StochasticGradientDescentTraining(
     net,
-    QuadraticCostFunction,
+    new QuadraticCostFunction(activationFunction),
     trainingInputs.map(_.toTrainingInput).toVector,
     numberOfEpochs = 10,
     batchSize = 10,
