@@ -14,7 +14,7 @@ object ImageRecognitionCrossEntropyCost extends App {
 
   val activationFunction: DifferentiableActivationFunction = SigmoidActivationFunction
 
-  val net = TrainableLayeredNetwork.generate(List(28 * 28, 100, 10), activationFunction)
+  val net = TrainableLayeredNetwork.initializeWithLargeWeights(List(28 * 28, 100, 10), activationFunction)
 
   val training = new StochasticGradientDescentTraining(
     net,

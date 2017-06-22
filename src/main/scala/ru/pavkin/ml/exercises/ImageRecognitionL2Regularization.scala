@@ -14,7 +14,7 @@ object ImageRecognitionL2Regularization extends App {
 
   val activationFunction: DifferentiableActivationFunction = SigmoidActivationFunction
 
-  val net = TrainableLayeredNetwork.generate(List(28 * 28, 30, 10), activationFunction)
+  val net = TrainableLayeredNetwork.initializeWithNormalizedWeights(List(28 * 28, 30, 10), activationFunction)
 
   val regularization = L2Regularization(net, trainingInputs.length, 5.0)
 

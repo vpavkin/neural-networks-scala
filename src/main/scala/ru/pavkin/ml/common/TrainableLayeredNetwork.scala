@@ -26,19 +26,31 @@ class TrainableLayeredNetwork(
 }
 
 object TrainableLayeredNetwork {
-  def generate(
+  def initializeWithLargeWeights(
     layerSizes: List[Int],
     activationFunction: DifferentiableActivationFunction,
-    distribution: Rand[Double] = Rand.gaussian): TrainableLayeredNetwork = new TrainableLayeredNetwork(
+    distribution: Rand[Double] = Rand.gaussian): TrainableLayeredNetwork = {
+    val (biases, weights) = generateNeurons(layerSizes, distribution)
+    new TrainableLayeredNetwork(biases, weights, activationFunction)
+  }
 
-    biases = layerSizes.tail
-      .map(layerSize => DenseVector.rand[Double](layerSize, Rand.gaussian))
-      .toVector,
+  def initializeWithNormalizedWeights(
+    layerSizes: List[Int],
+    activationFunction: DifferentiableActivationFunction,
+    distribution: Rand[Double] = Rand.gaussian): TrainableLayeredNetwork = {
+    val (biases, weights) = generateNeurons(layerSizes, distribution)
+    new TrainableLayeredNetwork(biases, weights.map(w => w / Math.sqrt(w.cols.toDouble)), activationFunction)
+  }
 
-    weights = layerSizes.zip(layerSizes.tail).map {
-      case (l1, l2) => DenseMatrix.rand[Double](l2, l1, Rand.gaussian)
-    }.toVector,
+  private def generateNeurons(
+    layerSizes: List[Int],
+    distribution: Rand[Double]): (Vector[DenseVector[Double]], Vector[DenseMatrix[Double]]) = {
+    val biases = layerSizes.tail.map(layerSize => DenseVector.rand[Double](layerSize, distribution)).toVector
+    val weights = layerSizes.zip(layerSizes.tail).map {
+      case (inputs, layer) => DenseMatrix.rand[Double](layer, inputs, distribution)
+    }.toVector
 
-    activationFunction = activationFunction
-  )
+    (biases, weights)
+  }
+
 }
