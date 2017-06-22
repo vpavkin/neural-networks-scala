@@ -8,7 +8,8 @@ class StochasticGradientDescentTraining(
   trainingInputs: Vector[TrainingInput],
   numberOfEpochs: Int,
   batchSize: Int,
-  learningRate: Double) {
+  learningRate: Double,
+  regularization: Regularization = NoRegularization) {
 
   import network._
 
@@ -42,7 +43,12 @@ class StochasticGradientDescentTraining(
     // for each element of the mini-batch calculate the gradient using backpropagation and
     // add the result to the total gradient of the mini-batch
     batch.foreach { input =>
-      val gradient = new BackPropagation(network, costFunction).gradient(input)
+      val originalGradient =
+        new BackPropagation(network, costFunction).gradient(input)
+
+      val gradient = originalGradient
+        .copy(weightsDerivative = regularization.modifyWeightGradient(originalGradient.weightsDerivative))
+
       biasesGradient.zip(gradient.biasesDerivative).foreach { case (b, dB) => b :+= dB }
       weightsGradient.zip(gradient.weightsDerivative).foreach { case (w, dW) => w :+= dW }
     }

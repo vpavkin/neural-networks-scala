@@ -69,7 +69,7 @@ class BackPropagation(
     // calculate "error" for the last layer.
     // e.g. for MSE this will be: δ[L] = ∇C ⊙ σ′(z[L])
     val lastLayerDelta: DenseVector[Double] =
-      costFunction.outputLayerDelta(activations.last, weightedInputs.last, input.correctResult)
+    costFunction.outputLayerDelta(activations.last, weightedInputs.last, input.correctResult)
 
     // update biases gradient for last layer: δ[L]
     biasesDerivative(numberOfLayers - 1) = lastLayerDelta
