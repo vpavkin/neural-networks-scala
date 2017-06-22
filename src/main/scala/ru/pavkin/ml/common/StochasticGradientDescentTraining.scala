@@ -5,7 +5,7 @@ import breeze.linalg.{DenseMatrix, DenseVector}
 class StochasticGradientDescentTraining(
   network: TrainableLayeredNetwork,
   costFunction: CostFunction,
-  trainingInputs: Vector[TrainingInput],
+  trainingData: Vector[TrainingInput],
   numberOfEpochs: Int,
   batchSize: Int,
   learningRate: Double,
@@ -17,20 +17,24 @@ class StochasticGradientDescentTraining(
   def train(): Unit =
     (0 until numberOfEpochs).foreach { _ => runEpoch() }
 
-  // run the training and use validation inputs after each epoch to evaluate intermedieate results
-  def trainAndValidate(
-    validateWith: Vector[TrainingInput],
-    validationMethod: TrainingInput => Boolean): Unit =
-    (0 until numberOfEpochs).foreach { epochIndex =>
+  // run the training and use validation inputs after each epoch to evaluate intermediate results
+  def trainAndEvaluate(
+    evaluationData: Vector[TrainingInput],
+    monitoring: LearningMonitoring = NoMonitoring): monitoring.Result =
+    (0 until numberOfEpochs).foldLeft(monitoring.resultMonoid.empty) { case (result, epochIndex) =>
       runEpoch()
-      validateEpochResults(epochIndex, validateWith, validationMethod)
+      println()
+      println(s"Training epoch $epochIndex complete.")
+      val epochMonitoringResult = monitoring.monitorEpoch(trainingData, evaluationData)
+      println(monitoring.resultShow.show(epochMonitoringResult))
+      monitoring.resultMonoid.combine(result, epochMonitoringResult)
     }
 
   // run single training epoch: split shuffed inputs into mini-batches and perform gradient descent for each mini-batch
   private def runEpoch(): Unit = {
-    val shuffledInputs: Vector[TrainingInput] = scala.util.Random.shuffle(trainingInputs)
+    val shuffledInputs: Vector[TrainingInput] = scala.util.Random.shuffle(trainingData)
 
-    (0 until (trainingInputs.size / batchSize)).foreach(batchIndex =>
+    (0 until (trainingData.size / batchSize)).foreach(batchIndex =>
       runBatch(shuffledInputs.slice(batchSize * batchIndex, batchSize * (batchIndex + 1)))
     )
   }
@@ -58,20 +62,5 @@ class StochasticGradientDescentTraining(
     biases.zip(biasesGradient).foreach { case (b, nb) => b :-= (nb * scaledLearningRate) }
     weights.zip(weightsGradient).foreach { case (w, nw) => w :-= (nw * scaledLearningRate) }
   }
-
-  /**
-    * Used only in [[trainAndValidate]] method.
-    * Runs validation inputs through the network and calculates the amount of correctly recognized samples.
-    */
-  private def validateEpochResults(
-    epochIndex: Int,
-    validationInputs: Vector[TrainingInput],
-    validationMethod: TrainingInput => Boolean): Unit = {
-    val recognizedCorrectly = validationInputs.foldLeft(0) {
-      case (n, input) => n + (if (validationMethod(input)) 1 else 0)
-    }
-    println(s"Epoch $epochIndex: $recognizedCorrectly/${validationInputs.size}")
-  }
-
 }
 
