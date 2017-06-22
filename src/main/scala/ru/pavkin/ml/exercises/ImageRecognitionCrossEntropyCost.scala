@@ -4,7 +4,7 @@ import breeze.linalg.{Vector => _, _}
 import ru.pavkin.ml.common._
 
 /**
-  * Main image recognition exercise, updated to use CrossEntropy cost function (chapter 3)
+  * Image recognition, updated to use CrossEntropy cost function (chapter 3)
   */
 object ImageRecognitionCrossEntropyCost extends App with RecognitionScenario {
 

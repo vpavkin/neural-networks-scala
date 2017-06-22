@@ -4,8 +4,8 @@ import breeze.linalg.{Vector => _, _}
 import ru.pavkin.ml.common._
 
 /**
-  * Main exercise from chapters 1-2.
-  * Image recognition using layered neural network trained with stochastic gradient descent.
+  * Image recognition using layered neural network trained with stochastic gradient descent and quadratic cost function.
+  * Covers chapter 1-2
   */
 object ImageRecognitionQuadraticCost extends App with RecognitionScenario {
 
