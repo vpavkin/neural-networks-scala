@@ -6,7 +6,7 @@ class StochasticGradientDescentTraining(
   network: TrainableLayeredNetwork,
   costFunction: CostFunction,
   trainingData: Vector[TrainingInput],
-  numberOfEpochs: Int,
+  maxNumberOfEpochs: Int,
   batchSize: Int,
   learningRate: Double,
   regularization: Regularization = NoRegularization) {
@@ -15,19 +15,23 @@ class StochasticGradientDescentTraining(
 
   // just run the training
   def train(): Unit =
-    (0 until numberOfEpochs).foreach { _ => runEpoch() }
+    (0 until maxNumberOfEpochs).foreach { _ => runEpoch() }
 
   // run the training and use validation inputs after each epoch to evaluate intermediate results
   def trainAndEvaluate(
     evaluationData: Vector[TrainingInput],
     monitoring: LearningMonitoring = NoMonitoring): monitoring.Result =
-    (0 until numberOfEpochs).foldLeft(monitoring.resultMonoid.empty) { case (result, epochIndex) =>
-      runEpoch()
-      println()
-      println(s"Training epoch $epochIndex complete.")
-      val epochMonitoringResult = monitoring.monitorEpoch(trainingData, evaluationData)
-      println(monitoring.resultShow.show(epochMonitoringResult))
-      monitoring.resultMonoid.combine(result, epochMonitoringResult)
+    (0 until maxNumberOfEpochs).foldLeft(monitoring.resultMonoid.empty) { case (result, epochIndex) =>
+      if (monitoring.shouldStopEarlier(result)) result
+      else {
+        runEpoch()
+
+        println()
+        println(s"Training epoch $epochIndex complete.")
+        val epochMonitoringResult = monitoring.monitorEpoch(trainingData, evaluationData)
+        println(monitoring.resultShow.show(epochMonitoringResult))
+        monitoring.resultMonoid.combine(result, epochMonitoringResult)
+      }
     }
 
   // run single training epoch: split shuffed inputs into mini-batches and perform gradient descent for each mini-batch

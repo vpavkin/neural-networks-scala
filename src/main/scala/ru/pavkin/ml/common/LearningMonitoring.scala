@@ -13,6 +13,13 @@ sealed trait LearningMonitoring {
   def monitorEpoch(
     trainingData: Vector[TrainingInput],
     evaluationData: Vector[TrainingInput]): Result
+
+  /**
+    * Checks for early stop conditions
+    *
+    * @param accumulatedResults monitoring results accumulated so far
+    */
+  def shouldStopEarlier(accumulatedResults: Result): Boolean
 }
 
 object NoMonitoring extends LearningMonitoring {
@@ -22,6 +29,7 @@ object NoMonitoring extends LearningMonitoring {
   def monitorEpoch(
     trainingData: Vector[TrainingInput],
     evaluationData: Vector[TrainingInput]): Unit = ()
+  def shouldStopEarlier(accumulatedResults: Unit): Boolean = false
 }
 
 case class Monitoring(
@@ -45,6 +53,15 @@ case class Monitoring(
     if (configuration.monitorTrainingCost) Some((accuracy(evaluationData), evaluationData.size)) else None
   ))
 
+  def shouldStopEarlier(accumulatedResults: Vector[Monitoring.Result]): Boolean =
+    configuration.monitorEvaluationAccuracy &&
+      configuration.stopIfNoImprovementInLastNEpochs.fold(false) { n =>
+        lazy val last10 = accumulatedResults.takeRight(n)
+        accumulatedResults.size > n &&
+          last10.head.evaluationDataRecognitionPercentage.exists(
+            _ >= last10.tail.flatMap(_.evaluationDataRecognitionPercentage).max)
+      }
+
   private def accuracy(data: Vector[TrainingInput]) =
     data.count(evaluationPredicate)
 
@@ -61,13 +78,20 @@ object Monitoring {
     monitorEvaluationCost: Boolean = true,
     monitorEvaluationAccuracy: Boolean = true,
     monitorTrainingCost: Boolean = true,
-    monitorTrainingAccuracy: Boolean = true)
+    monitorTrainingAccuracy: Boolean = true,
+    stopIfNoImprovementInLastNEpochs: Option[Int] = None)
 
   case class Result(
     costOnTrainingData: Option[Double],
     accuracyOnTrainingData: Option[(Int, Int)],
     costOnEvaluationData: Option[Double],
     accuracyOnEvaluationData: Option[(Int, Int)]) {
+
+    def evaluationDataRecognitionPercentage: Option[Double] =
+      accuracyOnEvaluationData.map {
+        case (correct, outOf) => correct.toDouble / outOf
+      }
+
     def print: String = List(
       costOnTrainingData.map(c => s"Cost on training data: $c"),
       costOnEvaluationData.map(c => s"Cost on evaluation data: $c"),
