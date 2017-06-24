@@ -1,0 +1,5 @@
+@(assets: AssetsFinder)
+
+
+@Seq(s"frontend-opt-bundle.js", s"frontend-fastopt-bundle.js").find(name => getClass.getResource(s"/public/$name") != null).map(theName => jsScript(assets.path(theName)))
+

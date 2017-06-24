@@ -1,0 +1,4 @@
+GET        /                             ru.pavkin.ml.app.backend.controllers.ApplicationController.index
+
+GET        /assets/*file                 controllers.Assets.at(file)
+GET        /versionedAssets/*file        controllers.Assets.versioned(file)
