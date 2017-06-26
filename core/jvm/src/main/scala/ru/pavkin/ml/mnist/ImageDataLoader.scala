@@ -62,8 +62,8 @@ object ImageDataLoader {
   }
 
   def loadTestDataFromResources: Try[Array[TrainingImage]] = for {
-    images <- loadImages("src/main/resources/train-images-idx3-ubyte")
-    labels <- loadLabels("src/main/resources/train-labels-idx1-ubyte")
+    images <- loadImages("core/jvm/src/main/resources/train-images-idx3-ubyte")
+    labels <- loadLabels("core/jvm/src/main/resources/train-labels-idx1-ubyte")
   } yield images.zip(labels).map(TrainingImage.tupled)
 
 }

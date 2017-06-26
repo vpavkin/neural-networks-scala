@@ -1,8 +1,8 @@
-package ru.pavkin.ml.common
+package ru.pavkin.ml.core
 
 import breeze.linalg.{DenseMatrix, DenseVector}
 
-class StochasticGradientDescentTraining(
+case class StochasticGradientDescentTraining(
   network: TrainableLayeredNetwork,
   costFunction: CostFunction,
   trainingData: Vector[TrainingInput],

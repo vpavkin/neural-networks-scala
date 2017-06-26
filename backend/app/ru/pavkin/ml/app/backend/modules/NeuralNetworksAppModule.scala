@@ -5,7 +5,7 @@ import play.api._
 import _root_.controllers.AssetsComponents
 import play.filters.HttpFiltersComponents
 import router.Routes
-import ru.pavkin.ml.app.backend.controllers.ApplicationController
+import ru.pavkin.ml.app.backend.controllers.{ApplicationController, DigitRecognitionController}
 
 class NeuralNetworksAppModule(context: Context)
   extends BuiltInComponentsFromContext(context)
@@ -18,6 +18,7 @@ class NeuralNetworksAppModule(context: Context)
     }
 
   val applicationController = new ApplicationController(controllerComponents, assetsFinder)(environment)
+  val digitRecognitionController = new DigitRecognitionController(controllerComponents)
 
-  val router = new Routes(httpErrorHandler, applicationController, assets)
+  val router = new Routes(httpErrorHandler, applicationController, digitRecognitionController, assets)
 }

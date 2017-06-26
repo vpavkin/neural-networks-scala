@@ -1,7 +1,7 @@
 package ru.pavkin.ml.mnist
 
 import breeze.linalg.{DenseMatrix, DenseVector}
-import ru.pavkin.ml.common.TrainingInput
+import ru.pavkin.ml.core.TrainingInput
 
 case class Image(pixels: DenseMatrix[Double]) extends AnyVal {
   def printToConsole(): Unit =

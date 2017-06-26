@@ -1,7 +1,7 @@
 package ru.pavkin.ml
 
 import breeze.linalg.argmax
-import ru.pavkin.ml.common.{LayeredNetwork, TrainingInput}
+import ru.pavkin.ml.core.{LayeredNetwork, TrainingInput}
 import ru.pavkin.ml.mnist.{ImageDataLoader, TrainingImage}
 
 package object exercises {

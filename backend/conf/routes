@@ -1,4 +1,7 @@
-GET        /                             ru.pavkin.ml.app.backend.controllers.ApplicationController.index
+GET         /                             ru.pavkin.ml.app.backend.controllers.ApplicationController.index
 
-GET        /assets/*file                 controllers.Assets.at(file)
-GET        /versionedAssets/*file        controllers.Assets.versioned(file)
+POST        /train                        ru.pavkin.ml.app.backend.controllers.DigitRecognitionController.train
+GET         /test                         ru.pavkin.ml.app.backend.controllers.DigitRecognitionController.test
+
+GET         /assets/*file                 controllers.Assets.at(file)
+GET         /versionedAssets/*file        controllers.Assets.versioned(file)

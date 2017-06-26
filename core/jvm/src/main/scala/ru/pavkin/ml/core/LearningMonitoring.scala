@@ -1,8 +1,8 @@
-package ru.pavkin.ml.common
+package ru.pavkin.ml.core
 
 import cats.Show
 import cats.kernel.Monoid
-import ru.pavkin.ml.common.Monitoring.Configuration
+import ru.pavkin.ml.core.Monitoring.Configuration
 
 sealed trait LearningMonitoring {
   type Result
@@ -39,21 +39,21 @@ case class Monitoring(
   evaluationPredicate: TrainingInput => Boolean,
   configuration: Configuration = Configuration()) extends LearningMonitoring {
 
-  type Result = Vector[Monitoring.Result]
+  type Result = Vector[MonitoringResult]
 
   implicit def resultMonoid: Monoid[Result] = cats.instances.vector.catsKernelStdMonoidForVector
-  implicit def resultShow: Show[Result] = cats.instances.vector.catsStdShowForVector[Monitoring.Result]
+  implicit def resultShow: Show[Result] = cats.instances.vector.catsStdShowForVector[MonitoringResult]
 
   def monitorEpoch(
     trainingData: Vector[TrainingInput],
-    evaluationData: Vector[TrainingInput]): Vector[Monitoring.Result] = Vector(Monitoring.Result(
+    evaluationData: Vector[TrainingInput]): Vector[MonitoringResult] = Vector(MonitoringResult(
     if (configuration.monitorTrainingCost) Some(totalCost(trainingData)) else None,
     if (configuration.monitorTrainingAccuracy) Some((accuracy(trainingData), trainingData.size)) else None,
     if (configuration.monitorTrainingCost) Some(totalCost(evaluationData)) else None,
     if (configuration.monitorTrainingCost) Some((accuracy(evaluationData), evaluationData.size)) else None
   ))
 
-  def shouldStopEarlier(accumulatedResults: Vector[Monitoring.Result]): Boolean =
+  def shouldStopEarlier(accumulatedResults: Vector[MonitoringResult]): Boolean =
     configuration.monitorEvaluationAccuracy &&
       configuration.stopIfNoImprovementInLastNEpochs.fold(false) { n =>
         lazy val last10 = accumulatedResults.takeRight(n)
@@ -81,33 +81,5 @@ object Monitoring {
     monitorTrainingAccuracy: Boolean = true,
     stopIfNoImprovementInLastNEpochs: Option[Int] = None)
 
-  case class Result(
-    costOnTrainingData: Option[Double],
-    accuracyOnTrainingData: Option[(Int, Int)],
-    costOnEvaluationData: Option[Double],
-    accuracyOnEvaluationData: Option[(Int, Int)]) {
 
-    def evaluationDataRecognitionPercentage: Option[Double] =
-      accuracyOnEvaluationData.map {
-        case (correct, outOf) => correct.toDouble / outOf
-      }
-
-    def print: String = List(
-      costOnTrainingData.map(c => s"Cost on training data: $c"),
-      costOnEvaluationData.map(c => s"Cost on evaluation data: $c"),
-      accuracyOnTrainingData.map { case (correct, outOf) => s"Accuracy on training data: $correct/$outOf" },
-      accuracyOnEvaluationData.map { case (correct, outOf) => s"Accuracy on evaluation data: $correct/$outOf" }
-    ).flatten.mkString("\n")
-  }
-
-  object Result {
-    implicit def show: Show[Result] = Show.show(result =>
-      List(
-        result.costOnTrainingData.map(c => s"Cost on training data: $c"),
-        result.costOnEvaluationData.map(c => s"Cost on evaluation data: $c"),
-        result.accuracyOnTrainingData.map { case (correct, outOf) => s"Accuracy on training data: $correct/$outOf [${Math.round(10000.0 * correct / outOf).toDouble / 100}%]" },
-        result.accuracyOnEvaluationData.map { case (correct, outOf) => s"Accuracy on evaluation data: $correct/$outOf [${Math.round(10000.0 * correct / outOf).toDouble / 100}%]" }
-      ).flatten.mkString("\n")
-    )
-  }
 }

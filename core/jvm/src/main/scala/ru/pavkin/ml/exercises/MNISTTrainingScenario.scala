@@ -1,8 +1,8 @@
 package ru.pavkin.ml.exercises
 
-import ru.pavkin.ml.common._
+import ru.pavkin.ml.core._
 
-trait RecognitionScenario {
+trait MNISTTrainingScenario {
 
   val (trainingData, validationData) = loadAndSplitMNISTData
 
@@ -16,7 +16,7 @@ trait RecognitionScenario {
     net, costFunction, regularization,
     evaluationPredicate = imageRecognized(net))
 
-  def training = new StochasticGradientDescentTraining(
+  def training = StochasticGradientDescentTraining(
     net,
     costFunction,
     trainingData.map(_.toTrainingInput).toVector,
@@ -26,11 +26,11 @@ trait RecognitionScenario {
     regularization = regularization
   )
 
-  def runScenario(): Unit = {
+  def runScenario(): Vector[MonitoringResult] = {
 
     val trainingInstance = training
 
-    val monitoringData: Vector[Monitoring.Result] = trainingInstance.trainAndEvaluate(
+    val monitoringData: Vector[MonitoringResult] = trainingInstance.trainAndEvaluate(
       validationData.map(_.toTrainingInput).toVector,
       monitoring)
 
@@ -38,5 +38,6 @@ trait RecognitionScenario {
     println("Scenario complete!")
     println(monitoringData)
 
+    monitoringData
   }
 }

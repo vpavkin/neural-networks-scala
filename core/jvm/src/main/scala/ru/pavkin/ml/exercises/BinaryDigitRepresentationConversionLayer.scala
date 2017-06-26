@@ -1,7 +1,7 @@
 package ru.pavkin.ml.exercises
 
 import breeze.linalg.{DenseMatrix, DenseVector}
-import ru.pavkin.ml.common._
+import ru.pavkin.ml.core._
 
 /**
   * Solution for exercise of transforming digit recognition network output to just for neurons,

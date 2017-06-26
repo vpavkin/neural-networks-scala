@@ -1,4 +1,4 @@
-package ru.pavkin.ml.common
+package ru.pavkin.ml.core
 
 import breeze.linalg.DenseVector
 

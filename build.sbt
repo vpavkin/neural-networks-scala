@@ -42,6 +42,7 @@ lazy val simulacrumVersion = "0.10.0"
 lazy val shapelessVersion = "2.3.2"
 lazy val circeVersion = "0.8.0"
 lazy val refinedVersion = "0.8.2"
+lazy val enumeratumVersion = "1.5.12"
 lazy val breezeVersion = "0.13.1"
 
 lazy val scalajsReactVersion = "1.0.1"
@@ -60,7 +61,8 @@ lazy val coreDependencies = libraryDependencies ++= Seq(
   "io.monix" %%% "monix-eval" % monixVersion,
   "io.monix" %%% "monix-cats" % monixVersion,
   "com.chuusai" %%% "shapeless" % shapelessVersion,
-  "eu.timepit" %%% "refined" % refinedVersion
+  "eu.timepit" %%% "refined" % refinedVersion,
+  "com.beachape" %%% "enumeratum" % enumeratumVersion
 )
 
 lazy val jvmDependencies = libraryDependencies ++= Seq(
@@ -149,3 +151,9 @@ lazy val coreJS = core.js
 
 lazy val jsonJVM = json.jvm
 lazy val jsonJS = json.js
+
+lazy val neuralNetworks = (project in file("."))
+  .settings(buildSettings: _*)
+  .settings(name := "neural-networks")
+  .settings(publish := {})
+  .aggregate(backend, frontend, coreJS, coreJVM, jsonJVM, jsonJS)

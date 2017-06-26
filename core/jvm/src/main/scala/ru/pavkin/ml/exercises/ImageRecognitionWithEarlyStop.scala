@@ -1,12 +1,12 @@
 package ru.pavkin.ml.exercises
 
 import breeze.linalg.{Vector => _}
-import ru.pavkin.ml.common._
+import ru.pavkin.ml.core._
 
 /**
   * Image recognition exercise, updated to use CrossEntropy cost function and L2 Regularization (chapter 3)
   */
-object ImageRecognitionWithEarlyStop extends App with RecognitionScenario {
+object ImageRecognitionWithEarlyStop extends App with MNISTTrainingScenario {
 
   val net = TrainableLayeredNetwork.initializeWithNormalizedWeights(List(28 * 28, 30, 10), activationFunction)
 
