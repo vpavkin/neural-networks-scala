@@ -36,9 +36,9 @@ lazy val testSettings = Seq(
 lazy val sourceSettings = buildSettings ++ compilerSettings ++ testSettings
 
 lazy val betterFilesVersion = "3.0.0"
-lazy val monixVersion = "2.2.4"
+lazy val monixVersion = "2.3.0"
 lazy val catsVersion = "0.9.0"
-lazy val simulacrumVersion = "0.10.0"
+lazy val simulacrumVersion = "0.11.0"
 lazy val shapelessVersion = "2.3.2"
 lazy val circeVersion = "0.8.0"
 lazy val refinedVersion = "0.8.2"
@@ -54,7 +54,7 @@ lazy val reactJSVersion = "15.5.4"
 
 
 lazy val coreDependencies = libraryDependencies ++= Seq(
-  compilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3"),
+  compilerPlugin("org.spire-math" %% "kind-projector" % "0.9.4"),
   "com.github.mpilquist" %%% "simulacrum" % simulacrumVersion,
   "org.typelevel" %%% "cats" % catsVersion,
   "io.monix" %%% "monix-execution" % monixVersion,
@@ -66,6 +66,7 @@ lazy val coreDependencies = libraryDependencies ++= Seq(
 )
 
 lazy val jvmDependencies = libraryDependencies ++= Seq(
+  "play-circe" %% "play-circe" % "2.6-0.8.0",
   "com.github.pathikrit" %% "better-files" % betterFilesVersion,
   "org.scalanlp" %% "breeze" % breezeVersion,
   "org.scalanlp" %% "breeze-natives" % breezeVersion,
@@ -73,7 +74,7 @@ lazy val jvmDependencies = libraryDependencies ++= Seq(
 )
 
 lazy val scalaMacrosSettings = libraryDependencies ++= Seq(
-  compilerPlugin("org.scalamacros" %% "paradise" % "2.1.0" cross CrossVersion.full)
+  compilerPlugin("org.scalamacros" %% "paradise" % "2.1.1" cross CrossVersion.full)
 )
 
 lazy val frontendDependencies = libraryDependencies ++= Seq(
@@ -83,7 +84,8 @@ lazy val frontendDependencies = libraryDependencies ++= Seq(
   "com.github.japgolly.scalacss" %%% "ext-react" % scalaCSSVersion,
   "io.suzaku" %%% "diode" % diodeVersion,
   "io.suzaku" %%% "diode-react" % diodeVersion,
-  "org.querki" %%% "jquery-facade" % jqueryFacadeVersion
+  "org.querki" %%% "jquery-facade" % jqueryFacadeVersion,
+  "org.scala-js" %%% "scalajs-java-time" % "0.2.2"
 )
 
 lazy val jsonDependencies = libraryDependencies ++= Seq(
@@ -115,7 +117,10 @@ lazy val backend = (project in file("backend"))
   .settings(
     name := "backend",
     scalaJSProjects := Seq(frontend),
-    pipelineStages in Assets := Seq(scalaJSPipeline)
+    pipelineStages in Assets := Seq(scalaJSPipeline),
+    npmAssets ++= NpmAssets.ofProject(frontend) { nodeModules =>
+      (nodeModules / "bootstrap").***
+    }.value
   )
   .settings(sourceSettings: _*)
   .settings(
@@ -124,9 +129,6 @@ lazy val backend = (project in file("backend"))
     jvmDependencies,
     jsonDependencies
   )
-  .settings(libraryDependencies ++= Seq(
-    ws
-  ))
   .dependsOn(coreJVM, jsonJVM)
 
 
@@ -135,13 +137,16 @@ lazy val frontend = project.in(file("frontend"))
   .settings(sourceSettings: _*)
   .settings(
     name := "frontend",
+    enableReloadWorkflow := true,
+    scalaJSUseMainModuleInitializer := true,
     coreDependencies,
     frontendDependencies
   )
   .settings(
     npmDependencies in Compile ++= Seq(
       "react" -> reactJSVersion,
-      "react-dom" -> reactJSVersion
+      "react-dom" -> reactJSVersion,
+      "bootstrap" -> "4.0.0-alpha.6"
     )
   )
   .dependsOn(coreJS, jsonJS)

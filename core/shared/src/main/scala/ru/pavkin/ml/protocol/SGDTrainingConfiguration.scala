@@ -13,4 +13,12 @@ case class SGDTrainingConfiguration(
   monitorEvaluationAccuracy: Boolean,
   monitorTrainingCost: Boolean,
   monitorTrainingAccuracy: Boolean,
-  stopIfNoImprovementInLastNEpochs: Option[Int])
+  stopIfNoImprovementInLastNEpochs: Option[Int]) {
+
+  require(hiddenLayersSizes.nonEmpty)
+  require(hiddenLayersSizes.forall(_ > 0))
+  require(maxNumberOfEpochs > 0)
+  require(batchSize > 0)
+  require(learningRate > 0)
+  require(stopIfNoImprovementInLastNEpochs.forall(_ > 0))
+}

@@ -1,8 +1,8 @@
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.0")
+addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.6.1")
 
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.17")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "0.6.18")
 
-addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.6.0")
+addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.7.0")
 
 addSbtPlugin("com.softwaremill.clippy" % "plugin-sbt" % "0.5.3")
 
